@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A379a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="S23-sM-ojT">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
+    </dependencies>
+    <scenes>
+        <!--Window Controller-->
+        <scene sceneID="EGc-1G-pcf">
+            <objects>
+                <windowController storyboardIdentifier="AboutWindow" id="S23-sM-ojT" sceneMemberID="viewController">
+                    <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="uqx-mH-LfP" customClass="AboutWindow" customModule="SSHhh">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="163" y="199" width="480" height="200"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <value key="minSize" type="size" width="480" height="200"/>
+                        <value key="maxSize" type="size" width="480" height="200"/>
+                    </window>
+                    <connections>
+                        <segue destination="rGt-qi-XFo" kind="relationship" relationship="window.shadowedContentViewController" id="N2E-X6-moG"/>
+                    </connections>
+                </windowController>
+                <customObject id="3kf-ly-GLc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-128" y="289"/>
+        </scene>
+        <!--About View Controller-->
+        <scene sceneID="QN1-Sl-O6D">
+            <objects>
+                <viewController id="rGt-qi-XFo" customClass="AboutViewController" customModule="SSHhh" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="w1h-7o-y4K">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="200"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="b9v-2K-gDo">
+                                <rect key="frame" x="5" y="5" width="190" height="190"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="190" id="7Pv-zY-Cy4"/>
+                                    <constraint firstAttribute="width" constant="190" id="Iye-a1-AoH"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="2K0-Zz-v5Q"/>
+                            </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ozp-3l-Q2G">
+                                <rect key="frame" x="198" y="145" width="279" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="j6j-AJ-j5w"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="SSHhh" id="M3N-qA-twK">
+                                    <font key="font" size="50" name="HelveticaNeue-UltraLight"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8tl-HA-NgW" userLabel="Version">
+                                <rect key="frame" x="198" y="120" width="279" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="Lrh-W6-QCg"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version 1.0.0" id="8hv-t6-ynM">
+                                    <font key="font" size="13" name="HelveticaNeue-Light"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sND-So-uXq" userLabel="Copyright">
+                                <rect key="frame" x="198" y="5" width="279" height="95"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Copyright Text." id="YOY-5x-aTH">
+                                    <font key="font" size="11" name="HelveticaNeue-Light"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="8tl-HA-NgW" firstAttribute="top" secondItem="Ozp-3l-Q2G" secondAttribute="bottom" constant="5" id="56H-i0-BSp"/>
+                            <constraint firstAttribute="trailing" secondItem="sND-So-uXq" secondAttribute="trailing" constant="5" id="6bb-Y4-Rqz"/>
+                            <constraint firstItem="sND-So-uXq" firstAttribute="top" secondItem="8tl-HA-NgW" secondAttribute="bottom" constant="20" id="BNz-Q7-836"/>
+                            <constraint firstAttribute="bottom" secondItem="b9v-2K-gDo" secondAttribute="bottom" constant="5" id="E3X-uD-gzq"/>
+                            <constraint firstItem="8tl-HA-NgW" firstAttribute="leading" secondItem="b9v-2K-gDo" secondAttribute="trailing" constant="5" id="HjN-3R-OAq"/>
+                            <constraint firstAttribute="trailing" secondItem="Ozp-3l-Q2G" secondAttribute="trailing" constant="5" id="JBc-7h-tby"/>
+                            <constraint firstAttribute="bottom" secondItem="sND-So-uXq" secondAttribute="bottom" constant="5" id="NxV-6A-Gcn"/>
+                            <constraint firstAttribute="trailing" secondItem="8tl-HA-NgW" secondAttribute="trailing" constant="5" id="TWR-o2-emQ"/>
+                            <constraint firstItem="Ozp-3l-Q2G" firstAttribute="leading" secondItem="b9v-2K-gDo" secondAttribute="trailing" constant="5" id="eX6-Rm-D41"/>
+                            <constraint firstItem="sND-So-uXq" firstAttribute="leading" secondItem="b9v-2K-gDo" secondAttribute="trailing" constant="5" id="qc4-dI-GQI"/>
+                            <constraint firstItem="Ozp-3l-Q2G" firstAttribute="top" secondItem="w1h-7o-y4K" secondAttribute="top" constant="5" id="qvv-Y2-lLN"/>
+                            <constraint firstItem="b9v-2K-gDo" firstAttribute="leading" secondItem="w1h-7o-y4K" secondAttribute="leading" constant="5" id="rtA-XZ-eQx"/>
+                            <constraint firstItem="b9v-2K-gDo" firstAttribute="top" secondItem="w1h-7o-y4K" secondAttribute="top" constant="5" id="sdE-LS-fFp"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="copyrightField" destination="sND-So-uXq" id="fEj-mF-vht"/>
+                        <outlet property="image" destination="b9v-2K-gDo" id="Isv-ni-ah1"/>
+                        <outlet property="nameField" destination="Ozp-3l-Q2G" id="MO8-se-Tna"/>
+                        <outlet property="versionField" destination="8tl-HA-NgW" id="i0Y-8P-oBg"/>
+                    </connections>
+                </viewController>
+                <customObject id="Fv3-Xi-VcM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="421" y="281"/>
+        </scene>
+    </scenes>
+</document>
