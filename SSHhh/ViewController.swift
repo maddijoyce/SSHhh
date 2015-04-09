@@ -212,6 +212,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     var trueIndex = find(self.configFile.configs, self.configFile.filteredConfigs[index])
                     var config = self.configFile.configs.removeAtIndex(trueIndex!)
                     config.removeObserver(self, forKeyPath: "edited", context: &configContext)
+                    config.removeObserver(self, forKeyPath: "keyChanged", context: &keyContext)
                     var newIndex = index == 0 ? 0 : index - 1
                     if self.configFile.filteredConfigs.count == 0 {
                         newIndex = -1
