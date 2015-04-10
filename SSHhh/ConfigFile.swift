@@ -41,7 +41,6 @@ class ConfigFile: NSObject {
             var myConfig = false
             var config: Config?
             var folder: Config?
-            var newFolder: Config?
             
             for line in string!.componentsSeparatedByString("\n") {
                 switch line {
@@ -55,24 +54,18 @@ class ConfigFile: NSObject {
                         let c = l.componentsSeparatedByString(" ")
                         switch c[0] {
                         case "Host", "#Host":
+                            config = Config(name: c[1])
+                            config?.enabled = (c[0] == "Host")
+                        case "#EndHost":
                             if config != nil {
                                 config?.edited = edited
-                                if newFolder != nil {
-                                    newFolder!.configs.append(config!)
-                                    config!.parent = newFolder
-                                } else if folder != nil {
+                                if folder != nil {
                                     folder!.configs.append(config!)
                                     config!.parent = folder
                                 } else {
                                     myConfigs.append(config!)
                                 }
                             }
-                            if newFolder != nil {
-                                myConfigs.append(newFolder!)
-                                newFolder = nil
-                            }
-                            config = Config(name: c[1])
-                            config?.enabled = (c[0] == "Host")
                         case "HostName", "#HostName":
                             config?.host = " ".join(c[1..<c.count])
                         case "User", "#User":
@@ -82,11 +75,15 @@ class ConfigFile: NSObject {
                         case "IdentityFile", "#IdentityFile":
                             config?.keyString = " ".join(c[1..<c.count]).stringByReplacingOccurrencesOfString("\"", withString: "").lastPathComponent
                         case "#Folder":
-                            folder = Config(name: " ".join(c[1..<c.count]))
-                            folder?.isFolder = true
+                            var newFolder = Config(name: " ".join(c[1..<c.count]))
+                            newFolder.isFolder = true
+                            newFolder.parent = folder
+                            folder = newFolder
                         case "#EndFolder":
-                            newFolder = folder
-                            folder = nil
+                            if folder != nil {
+                                myConfigs.append(folder!)
+                                folder = folder?.parent
+                            }
                         default:
                             if c[0] != "" && c[0] != "#" {
                                 NSLog("Unrecognised Key: \(c[0])")
@@ -96,22 +93,6 @@ class ConfigFile: NSObject {
                         surroundingData.append(line)
                     }
                 }
-            }
-            if config != nil {
-                config?.edited = edited
-                if newFolder != nil {
-                    newFolder!.configs.append(config!)
-                    config!.parent = newFolder
-                } else if folder != nil {
-                    folder!.configs.append(config!)
-                    config!.parent = folder
-                } else {
-                    myConfigs.append(config!)
-                }
-            }
-            if newFolder != nil {
-                myConfigs.append(newFolder!)
-                newFolder = nil
             }
         }
         
@@ -154,16 +135,17 @@ class ConfigFile: NSObject {
             if config.isFolder {
                 string += "#Folder \(config.name)\n"
                 string += configArrayToString(config.configs)
-                string += "#EndFolder \(config.name)\n"
+                string += "#EndFolder\n"
             } else {
                 string += "\(e)Host \(config.name)\(multipleAlias)\n" +
-                    "\(e)\tHostName \(config.host)\n" +
-                    "\(e)\tUser \(config.user)\n" +
-                "\(e)\tPort \(config.port)\n"
+                          "\(e)\tHostName \(config.host)\n" +
+                          "\(e)\tUser \(config.user)\n" +
+                          "\(e)\tPort \(config.port)\n"
                 if config.keyString != "" {
                     var keyPath = path.stringByAppendingPathComponent(config.keyString)
                     string += "\(e)\tIdentityFile \"\(keyPath)\"\n"
                 }
+                string += "#EndHost\n"
             }
             config.edited = false
         }

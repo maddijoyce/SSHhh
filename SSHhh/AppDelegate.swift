@@ -204,11 +204,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 if !(window.windowController() as! WindowController).shouldApplicationTerminate() {
                     let alert = NSAlert()
                     alert.messageText = "Do you want to save your changes?"
-                    alert.informativeText = "Your changes will be lost if you don't save them"
+                    alert.informativeText = "Your changes will be lost."
                     alert.addButtonWithTitle("Save")
                     alert.addButtonWithTitle("Cancel")
                     alert.addButtonWithTitle("Don't Save")
                     let response = alert.runModal()
+                    switch response {
+                    case NSAlertFirstButtonReturn:
+                        (window.windowController() as! WindowController).saveHosts(sender)
+                        return .TerminateNow
+                    case NSAlertThirdButtonReturn:
+                        return .TerminateNow
+                    default:
+                        return .TerminateCancel
+                    }
                 }
             }
         }
