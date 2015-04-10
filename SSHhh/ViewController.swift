@@ -8,15 +8,13 @@
 
 import Cocoa
 
-private var configContext = 0
 private var windowContext = 1
-private var keyContext    = 2
 private var fileContext   = 3
 private var importContext = 4
 
 class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate {
     @IBOutlet weak var splitView: NSSplitView!
-    @IBOutlet weak var sideBar: NSOutlineView!
+    @IBOutlet weak var sideBar: Sidebar!
     
     var configFile: ConfigFile
     var editor: EditorController
@@ -30,10 +28,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         
         representedObject = configFile
         configFile.addObserver(self, forKeyPath: "search", options: .New, context: &windowContext)
-        for config in configFile.configs {
-            config.addObserver(self, forKeyPath: "edited", options: .New, context: &configContext)
-            config.addObserver(self, forKeyPath: "keyChanged", options: .New, context: &keyContext)
-        }
         NSUserDefaults.standardUserDefaults().addObserver(self, forKeyPath: "filePath", options: .New, context: &fileContext)
         
         var appDel = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -58,6 +52,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         v.frame = splitView.bounds
         v.autoresizingMask = NSAutoresizingMaskOptions.ViewWidthSizable | NSAutoresizingMaskOptions.ViewHeightSizable
         splitView.addSubview(v)
+        
+        sideBar?.expandItem(nil, expandChildren: true)
     }
     
     override func viewDidAppear() {
@@ -71,21 +67,32 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     // Outline View Delegate & Data Source
     func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
-        return (item == nil) ? configFile.filteredConfigs.count : 0
+        if (item == nil) {
+            return configFile.filteredConfigs.count
+        } else {
+            if (item is Config && (item as! Config).isFolder) {
+                return (item as! Config).configs.count
+            } else {
+                return 0
+            }
+        }
     }
     
     func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
-        return false
+        return item is Config && (item as! Config).isFolder
     }
     func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
-        return configFile.filteredConfigs[index]
+        if (item is Config && (item as! Config).isFolder) {
+            return (item as! Config).configs[index]
+        } else {
+            return configFile.filteredConfigs[index]
+        }
     }
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
         var config = (item as! Config)
-        var view = outlineView.makeViewWithIdentifier("DataCell", owner: self) as! NSTableCellView
+        var view = outlineView.makeViewWithIdentifier("DataCell", owner: self) as! SidebarCell
         
-        view.imageView!.image = config.image
-        view.textField!.stringValue = config.name
+        view.config = config
         config.sideBarView = view
         
         return view
@@ -98,9 +105,40 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         }
     }
     
+    func indexArrayFromConfig(initialConfig: Config?) -> [Int] {
+        var c:Config? = initialConfig
+        var indexes:[Int] = []
+        
+        while c != nil {
+            if c!.parent != nil {
+                indexes.insert(find(c!.parent!.configs, c!)!, atIndex: 0)
+            } else {
+                indexes.insert(find(configFile.configs, c!)!, atIndex: 0)
+            }
+            c = c!.parent
+        }
+        
+        return indexes
+    }
+    func removeConfigfromArray(inout parentArray: [Config], inout indexes: [Int]) -> Config {
+        if (indexes.count > 1) {
+            return removeConfigfromArray(&parentArray[indexes.removeAtIndex(0)].configs, indexes: &indexes)
+        } else {
+            return parentArray.removeAtIndex(indexes[0])
+        }
+    }
+    func insertConfigIntoArray(inout parentArray: [Config], index: Int, config: Config) {
+        if index < 0 || index > parentArray.count {
+            parentArray.append(config)
+        } else {
+            parentArray.insert(config, atIndex: index)
+        }
+    }
+    
     func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
-        var index:Int? = find(configFile.configs, items.first as! Config)
-        var data:NSData = NSKeyedArchiver.archivedDataWithRootObject(index!)
+        var c = items.first as! Config?
+        
+        var data:NSData = NSKeyedArchiver.archivedDataWithRootObject(indexArrayFromConfig(c))
         
         var registeredTypes:[String] = [NSStringPboardType]
         pasteboard.declareTypes(registeredTypes, owner: self)
@@ -109,41 +147,34 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     func outlineView(outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: AnyObject?, proposedChildIndex index: Int) -> NSDragOperation {
-        var data:NSData = info.draggingPasteboard().dataForType(NSStringPboardType)!
-        var oldIndex:Int = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Int
-        
-        if item == nil && index != oldIndex && index != oldIndex + 1 && index != -1 {
-            return .Move
-        }
-        return .None
+        return ((item == nil) || (item is Config && (item as! Config).isFolder)) ? .Move : .None
     }
     
     func outlineView(outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, childIndex index: Int) -> Bool {
-        if item == nil {
-            var data:NSData = info.draggingPasteboard().dataForType(NSStringPboardType)!
-            var oldIndex:Int = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Int
-            
-            if (index == oldIndex || index == oldIndex + 1 || index == -1) {
-                return false
-            } else {
-                var config = configFile.configs.removeAtIndex(oldIndex)
-                configFile.configs.insert(config, atIndex: index > oldIndex ? index - 1 : index)
-                self.sideBar.reloadData()
-                
-                return true
-            }
+        var data:NSData = info.draggingPasteboard().dataForType(NSStringPboardType)!
+        var oldIndexes:[Int] = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! [Int]
+        var config: Config? = removeConfigfromArray(&configFile.configs, indexes: &oldIndexes)
+        
+        var trueIndex = index
+        if (config!.parent === item && trueIndex > oldIndexes.last!) {
+            trueIndex -= 1
         }
-        return false
+        
+        if item is Config {
+            insertConfigIntoArray(&(item as! Config).configs, index: trueIndex, config: config!)
+            config!.parent = item as! Config?
+        } else {
+            insertConfigIntoArray(&configFile.configs, index: trueIndex, config: config!)
+            config!.parent = nil
+        }
+        
+        sideBar.reloadData()
+        sideBar.selectRowIndexes(NSIndexSet(index: sideBar.rowForItem(editor.representedObject)), byExtendingSelection: false)
+        return true
     }
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
-        if context == &configContext {
-            (object as! Config).sideBarView?.imageView!.image = (object as! Config).image
-            (object as! Config).sideBarView?.textField!.stringValue = (object as! Config).name
-        } else if context == &keyContext {
-            (object as! Config).testButtonText = "Test SSH Key"
-            (object as! Config).testingImage = (object as! Config).TestingUnknown
-        } else if context == &windowContext {
+        if context == &windowContext {
             var config: Config! = nil
             if sideBar.selectedRow != -1 {
                 config = sideBar.itemAtRow(sideBar.selectedRow) as! Config
@@ -165,10 +196,11 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 for config in appDel.importedConfigs {
                     configFile.configs.append(config)
                     config.edited = true
-                    config.addObserver(self, forKeyPath: "edited", options: .New, context: &configContext)
-                    config.addObserver(self, forKeyPath: "keyChanged", options: .New, context: &keyContext)
                 }
                 sideBar.reloadData()
+                for config in appDel.importedConfigs {
+                    sideBar.expandItem(config, expandChildren: true)
+                }
                 sideBar.selectRowIndexes(NSIndexSet(index: 0), byExtendingSelection: false)
                 appDel.importedConfigs = []
             }
@@ -177,15 +209,53 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         }
     }
     
-    @IBAction func addHost(AnyObject) {
-        var config = Config(name: "")
-        configFile.configs.append(config)
+    @IBAction func addGroup(AnyObject) {
+        var config = Config(name: "New Group")
+        config.isFolder = true
+        
+        var current = self.editor.representedObject as! Config?
+        
+        if current != nil && current!.isFolder {
+            current!.configs.append(config)
+            config.parent = current!
+            sideBar.expandItem(current!)
+        } else if current != nil && current!.parent != nil {
+            current!.parent!.configs.append(config)
+            config.parent = current!.parent!
+            sideBar.expandItem(current!.parent!)
+        } else {
+            configFile.configs.append(config)
+        }
+        
         window?.searchField.stringValue = ""
         window?.filterHosts(window!.searchField)
         window?.searchField.window?.makeFirstResponder(sideBar)
         sideBar?.reloadData()
         sideBar.selectRowIndexes(NSIndexSet(index: sideBar.rowForItem(config)), byExtendingSelection: false)
-        config.addObserver(self, forKeyPath: "edited", options: .New, context: &configContext)
+    }
+    
+    @IBAction func addHost(AnyObject) {
+        var config = Config(name: "")
+    
+        var current = self.editor.representedObject as! Config?
+        
+        if current != nil && current!.isFolder {
+            current!.configs.append(config)
+            config.parent = current!
+            sideBar.expandItem(current!)
+        } else if current != nil && current!.parent != nil {
+            current!.parent!.configs.append(config)
+            config.parent = current!.parent!
+            sideBar.expandItem(current!.parent!)
+        } else {
+            configFile.configs.append(config)
+        }
+        
+        window?.searchField.stringValue = ""
+        window?.filterHosts(window!.searchField)
+        window?.searchField.window?.makeFirstResponder(sideBar)
+        sideBar?.reloadData()
+        sideBar.selectRowIndexes(NSIndexSet(index: sideBar.rowForItem(config)), byExtendingSelection: false)
     }
     var canRemoveHost: Bool = false {
         didSet {
@@ -199,8 +269,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         return true
     }
     @IBAction func removeHost(AnyObject) {
-        var index = sideBar.selectedRow
-        if index >= 0 {
+        if self.editor.representedObject != nil {
             var alert = NSAlert()
             alert.messageText = "Are you sure?"
             alert.informativeText = "Are you sure you want to remove this host? If deleted, this host will remain active until you save your changes."
@@ -209,18 +278,22 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             alert.beginSheetModalForWindow(view.window!, completionHandler: {
                 (response: NSModalResponse) in
                 if response == NSAlertFirstButtonReturn {
-                    var trueIndex = find(self.configFile.configs, self.configFile.filteredConfigs[index])
-                    var config = self.configFile.configs.removeAtIndex(trueIndex!)
-                    config.removeObserver(self, forKeyPath: "edited", context: &configContext)
-                    config.removeObserver(self, forKeyPath: "keyChanged", context: &keyContext)
-                    var newIndex = index == 0 ? 0 : index - 1
-                    if self.configFile.filteredConfigs.count == 0 {
-                        newIndex = -1
-                        self.editor.representedObject = nil
-                        self.canRemoveHost = false
+                    var config = self.editor.representedObject as! Config
+                    var oldIndex = self.sideBar.rowForItem(config)
+                    
+                    if config.parent != nil {
+                        config.parent!.configs.removeAtIndex(find(config.parent!.configs, config)!)
+                    } else {
+                        self.configFile.configs.removeAtIndex(find(self.configFile.configs, config)!)
                     }
+                    self.editor.representedObject = nil
+                    self.canRemoveHost = false
                     self.sideBar.reloadData()
-                    self.sideBar.selectRowIndexes(NSIndexSet(index: newIndex), byExtendingSelection: false)
+                    
+                    self.sideBar.selectRowIndexes(NSIndexSet(index: oldIndex), byExtendingSelection: false)
+                    if self.sideBar.selectedRow == -1 {
+                        self.sideBar.selectRowIndexes(NSIndexSet(index: oldIndex - 1), byExtendingSelection: false)
+                    }
                 }
             })
         }
@@ -239,17 +312,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         configFile.saveToFile()
     }
     @IBAction func revertHosts(AnyObject) {
-        for config in configFile.configs {
-            config.removeObserver(self, forKeyPath: "edited", context: &configContext)
-            config.removeObserver(self, forKeyPath: "keyChanged", context: &keyContext)
-        }
         editor.representedObject = nil
         canRemoveHost = false
         configFile.reload()
-        for config in configFile.configs {
-            config.addObserver(self, forKeyPath: "edited", options: .New, context: &configContext)
-            config.addObserver(self, forKeyPath: "keyChanged", options: .New, context: &keyContext)
-        }
         sideBar.reloadData()
         sideBar.selectRowIndexes(NSIndexSet(index: 0), byExtendingSelection: false)
     }

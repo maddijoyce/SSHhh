@@ -54,7 +54,7 @@ class GeneralPreferencesViewController: NSViewController {
         var configs: [Config]
         var remainder: String
         
-        (configs, remainder) = ConfigFile().fromString(NSString(data: data!, encoding:NSUTF8StringEncoding) as? String)
+        (configs, remainder) = ConfigFile().fromString(NSString(data: data!, encoding:NSUTF8StringEncoding) as? String, edited: true)
         
         var appDel = NSApplication.sharedApplication().delegate as! AppDelegate
         appDel.importedConfigs = configs
@@ -74,6 +74,13 @@ class GeneralPreferencesViewController: NSViewController {
                     identity.setValue(name, forKey: "name")
                     identity.setValue(privateString, forKey: "privateKey")
                     context.save(nil)
+                    var path = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.ApplicationSupportDirectory, NSSearchPathDomainMask.UserDomainMask, true).first! as! String
+                    path = path.stringByAppendingPathComponent((NSBundle.mainBundle().infoDictionary?["CFBundleIdentifier"]! as! String))
+                    NSFileManager.defaultManager().createDirectoryAtPath(path, withIntermediateDirectories: true, attributes: nil, error: nil)
+
+                    var newPath = path.stringByAppendingPathComponent(name!)
+                    NSFileManager.defaultManager().createFileAtPath(newPath, contents: privateString!.dataUsingEncoding(NSUTF8StringEncoding), attributes: nil)
+                    NSFileManager.defaultManager().setAttributes([NSFilePosixPermissions: NSNumber(short: 256)], ofItemAtPath: newPath, error: nil)
                 }
             default:
                 let c = line.componentsSeparatedByString(" ")

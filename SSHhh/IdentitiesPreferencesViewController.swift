@@ -149,9 +149,7 @@ class IdentitiesPreferencesViewController: NSViewController, NSOutlineViewDataSo
                     }
                     
                     context.deleteObject(identity)
-                    var newIndex = index == 0 ? 0 : index - 1
                     if self.results.count == 0 {
-                        newIndex = -1
                         identity.removeObserver(self, forKeyPath: "name", context: &identityNameContext)
                         identity.removeObserver(self, forKeyPath: "privateKey", context: &identityContentContext)
                         
@@ -159,7 +157,10 @@ class IdentitiesPreferencesViewController: NSViewController, NSOutlineViewDataSo
                         self.canRemoveIdentity = false
                     }
                     self.identityList.reloadData()
-                    self.identityList.selectRowIndexes(NSIndexSet(index: newIndex), byExtendingSelection: false)
+                    self.identityList.selectRowIndexes(NSIndexSet(index: index), byExtendingSelection: false)
+                    if self.identityList.selectedRow == -1 {
+                        self.identityList.selectRowIndexes(NSIndexSet(index: index - 1), byExtendingSelection: false)
+                    }
                 }
             })
         }

@@ -12,7 +12,6 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
     var about: NSWindowController!
     var preferences: NSWindowController!
-    var main: WindowController!
     
     dynamic var importedConfigs: [Config] = []
     
@@ -22,6 +21,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSValueTransformer.setValueTransformer(CapitalizeTransformer(), forName: "CapitalizeTransformer")
         NSValueTransformer.setValueTransformer(EnabledColorTransformer(), forName: "EnabledColorTransformer")
         NSValueTransformer.setValueTransformer(IsNotEmpty(), forName: "IsNotEmpty")
+        NSValueTransformer.setValueTransformer(IsNotConfig(), forName: "IsNotConfig")
+        NSValueTransformer.setValueTransformer(IsConfig(), forName: "IsConfig")
         
         NSUserDefaults.standardUserDefaults().registerDefaults([
             "filePath": "~/.ssh/config",
@@ -172,33 +173,51 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             
             if !moc.hasChanges {
-                return .TerminateNow
-            }
-            
-            var error: NSError? = nil
-            if !moc.save(&error) {
-                // Customize this code block to include application-specific recovery steps.
-                let result = sender.presentError(error!)
-                if (result) {
-                    return .TerminateCancel
-                }
-                
-                let question = NSLocalizedString("Could not save changes while quitting. Quit anyway?", comment: "Quit without saves error question message")
-                let info = NSLocalizedString("Quitting now will lose any changes you have made since the last successful save", comment: "Quit without saves error question info");
-                let quitButton = NSLocalizedString("Quit anyway", comment: "Quit anyway button title")
-                let cancelButton = NSLocalizedString("Cancel", comment: "Cancel button title")
-                let alert = NSAlert()
-                alert.messageText = question
-                alert.informativeText = info
-                alert.addButtonWithTitle(quitButton)
-                alert.addButtonWithTitle(cancelButton)
-                
-                let answer = alert.runModal()
-                if answer == NSAlertFirstButtonReturn {
-                    return .TerminateCancel
+                var error: NSError? = nil
+                if !moc.save(&error) {
+                    // Customize this code block to include application-specific recovery steps.
+                    let result = sender.presentError(error!)
+                    if (result) {
+                        return .TerminateCancel
+                    }
+                    
+                    let question = NSLocalizedString("Could not save changes while quitting. Quit anyway?", comment: "Quit without saves error question message")
+                    let info = NSLocalizedString("Quitting now will lose any changes you have made since the last successful save", comment: "Quit without saves error question info");
+                    let quitButton = NSLocalizedString("Quit anyway", comment: "Quit anyway button title")
+                    let cancelButton = NSLocalizedString("Cancel", comment: "Cancel button title")
+                    let alert = NSAlert()
+                    alert.messageText = question
+                    alert.informativeText = info
+                    alert.addButtonWithTitle(quitButton)
+                    alert.addButtonWithTitle(cancelButton)
+                    
+                    let answer = alert.runModal()
+                    if answer == NSAlertFirstButtonReturn {
+                        return .TerminateCancel
+                    }
                 }
             }
         }
+        
+        for window in NSApplication.sharedApplication().windows {
+            if window.windowController() is WindowController {
+                if !(window.windowController() as! WindowController).shouldApplicationTerminate() {
+                    var alert = NSAlert()
+                    alert.messageText = "Are you sure?"
+                    alert.informativeText = "Are you sure you want to remove this identity? Any hosts using this identity will no longer have access."
+                    alert.addButtonWithTitle("Yes")
+                    alert.addButtonWithTitle("No")
+                    window.makeKeyAndOrderFront(nil)
+                    alert.beginSheetModalForWindow(window, completionHandler: {
+                        (response: NSModalResponse) in
+                        if response == NSAlertFirstButtonReturn {
+                            
+                        }
+                    })
+                }
+            }
+        }
+        
         // If we got here, it is time to quit.
         return .TerminateNow
     }

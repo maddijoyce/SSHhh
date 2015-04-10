@@ -27,6 +27,18 @@ class WindowController: NSWindowController {
         self.window!.titleVisibility = NSWindowTitleVisibility.Hidden
     }
     
+    func shouldApplicationTerminate() -> Bool {
+        return !unsavedChanges(configFile!.configs)
+    }
+    
+    func unsavedChanges(configs: [Config]) -> Bool {
+        var changes = false
+        for config in configs {
+            changes = changes || config.edited || unsavedChanges(config.configs)
+        }
+        return changes
+    }
+    
     @IBAction func filterHosts(sender: AnyObject) {
         var searchString = (sender as! NSSearchField).stringValue
         if configFile != nil {

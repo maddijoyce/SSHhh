@@ -13,15 +13,20 @@ class Config: NSObject {
     
     dynamic var edited: Bool = false
     dynamic var keyChanged: Bool = false
+
+    dynamic var isFolder: Bool = false
+    dynamic var configs: [Config] = []
+    dynamic var parent: Config?
+    
     let minPort: Int = 1
     let maxPort: Int = 65535
     
-    var enabled: Bool = false {
+    var enabled: Bool = true {
         didSet {
             edited = true
         }
     }
-    var name: String {
+    dynamic var name: String {
         didSet {
             edited = true
         }
@@ -71,16 +76,20 @@ class Config: NSObject {
         return name != "" && user != "" && host != "" && port >= minPort  && port <= maxPort
     }
     
-    var image: NSImage {
+    dynamic var image: NSImage {
         var imageName = NSImageNameStatusAvailable
-        if edited {
-            imageName = NSImageNameStatusPartiallyAvailable
-        }
-        if !validated {
-            imageName = NSImageNameStatusUnavailable
-        }
-        if !enabled {
-            imageName = NSImageNameStatusNone
+        if isFolder {
+            imageName = NSImageNameFolder
+        } else {
+            if edited {
+                imageName = NSImageNameStatusPartiallyAvailable
+            }
+            if !validated {
+                imageName = NSImageNameStatusUnavailable
+            }
+            if !enabled {
+                imageName = NSImageNameStatusNone
+            }
         }
         return NSImage(named: imageName)!
     }

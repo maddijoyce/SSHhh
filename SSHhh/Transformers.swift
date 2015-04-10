@@ -61,3 +61,35 @@ class IsNotEmpty: NSValueTransformer {
         return !(object == nil || object! as! String == "")
     }
 }
+
+class IsNotConfig: NSValueTransformer {
+    
+    func allowsReverseTransformation() -> Bool {
+        return false
+    }
+    
+    override func transformedValue(object: AnyObject?) -> AnyObject? {
+        if (object is Config) {
+            return !(object as! Config).isFolder
+        } else {
+            return false
+        }
+    }
+
+}
+
+class IsConfig: NSValueTransformer {
+    
+    func allowsReverseTransformation() -> Bool {
+        return false
+    }
+    
+    override func transformedValue(object: AnyObject?) -> AnyObject? {
+        if (object is Config) {
+            return (object as! Config).isFolder
+        } else {
+            return true
+        }
+    }
+    
+}

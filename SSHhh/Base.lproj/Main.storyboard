@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14C1514" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7531"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
@@ -66,6 +66,11 @@
                                         <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
                                                 <action selector="addHost:" target="Ady-hI-5gd" id="JuY-Uh-76Y"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="New Group" keyEquivalent="N" id="VPc-Ut-MKJ">
+                                            <connections>
+                                                <action selector="addGroup:" target="Ady-hI-5gd" id="qSK-qZ-8b6"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Delete" id="RN6-tR-7pa">
@@ -485,7 +490,7 @@ CA
                                             <rect key="frame" x="1" y="1" width="148" height="398"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="1Vu-1Z-YS7" id="OyY-pl-nL6">
+                                                <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="1Vu-1Z-YS7" id="OyY-pl-nL6" customClass="Sidebar" customModule="SSHhh" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="179.5" height="0.0"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -522,26 +527,32 @@ CA
                                                                         <outlet property="textField" destination="Pgw-gK-FzP" id="tRM-z0-fKD"/>
                                                                     </connections>
                                                                 </tableCellView>
-                                                                <tableCellView identifier="DataCell" id="OSJ-pa-vUQ">
+                                                                <tableCellView identifier="DataCell" id="OSJ-pa-vUQ" customClass="SidebarCell" customModule="SSHhh" customModuleProvider="target">
                                                                     <rect key="frame" x="1" y="20" width="176" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UeU-3K-oPT">
                                                                             <rect key="frame" x="3" y="0.0" width="17" height="17"/>
                                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottom" imageScaling="proportionallyDown" image="NSActionTemplate" id="vCV-IK-uF2"/>
+                                                                            <connections>
+                                                                                <binding destination="OSJ-pa-vUQ" name="value" keyPath="image" id="nSx-Wx-qB7"/>
+                                                                            </connections>
                                                                         </imageView>
                                                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gHQ-TP-sal">
                                                                             <rect key="frame" x="25" y="0.0" width="120" height="17"/>
-                                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="LdN-gA-PFZ">
+                                                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Table View Cell" id="LdN-gA-PFZ">
                                                                                 <font key="font" metaFont="system"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
+                                                                            <connections>
+                                                                                <binding destination="OSJ-pa-vUQ" name="value" keyPath="name" id="0A7-Pg-a6c"/>
+                                                                            </connections>
                                                                         </textField>
                                                                     </subviews>
                                                                     <connections>
                                                                         <outlet property="imageView" destination="UeU-3K-oPT" id="z4t-ru-rGI"/>
-                                                                        <outlet property="textField" destination="gHQ-TP-sal" id="EzB-wQ-GKv"/>
+                                                                        <outlet property="textField" destination="gHQ-TP-sal" id="mM4-By-7Ju"/>
                                                                     </connections>
                                                                 </tableCellView>
                                                             </prototypeCellViews>
@@ -608,9 +619,9 @@ CA
                                 </constraints>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="bottom" imageScaling="proportionallyUpOrDown" image="NSComputer" id="V4g-QG-iMM"/>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="Ggm-ln-6Ad">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="rOB-BJ-aMC">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                 </connections>
@@ -626,6 +637,11 @@ CA
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
+                                    <binding destination="CTA-8D-9wg" name="hidden" keyPath="representedObject" id="6Kb-sx-n0M">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">IsConfig</string>
+                                        </dictionary>
+                                    </binding>
                                     <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.name" id="crZ-sj-WPK">
                                         <dictionary key="options">
                                             <bool key="NSContinuouslyUpdatesValue" value="YES"/>
@@ -655,9 +671,9 @@ CA
                                     <font key="font" metaFont="systemBold"/>
                                 </buttonCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="RSh-Pz-rVP">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="3bp-yy-4yk">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.enabled" id="beC-Wc-vH7">
@@ -697,9 +713,9 @@ CA
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="LRO-Fj-bwm">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="yn4-Ya-H57">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.name" id="BFf-NP-q18">
@@ -740,15 +756,16 @@ CA
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="Rz3-w0-4Xe">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="0k2-yK-cue">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.user" id="opF-uL-0Ay">
+                                    <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.user" id="VLG-mH-yge">
                                         <dictionary key="options">
                                             <bool key="NSConditionallySetsEditable" value="NO"/>
                                             <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                            <string key="NSValueTransformerName">EmptyStringTransformer</string>
                                         </dictionary>
                                     </binding>
                                 </connections>
@@ -782,9 +799,9 @@ CA
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="vQ9-TU-6Xb">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="qJi-da-4Vd">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="value" keyPath="representedObject.host" id="Wg7-Bn-Br4">
@@ -826,9 +843,9 @@ CA
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="fLH-cG-qh3">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="ixk-Vj-iLQ">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="maxValue" keyPath="representedObject.maxPort" id="YHT-yT-va0"/>
@@ -846,9 +863,9 @@ CA
                                 <rect key="frame" x="509" y="103" width="19" height="27"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="VAa-fb-hQx"/>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="wJn-fK-fDa">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="fO1-uA-f02">
                                         <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="maxValue" keyPath="representedObject.maxPort" id="9KQ-RH-w9C"/>
@@ -899,17 +916,17 @@ CA
                                     </menu>
                                 </popUpButtonCell>
                                 <connections>
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="aSz-iu-ZBS">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
+                                        </dictionary>
+                                    </binding>
                                     <binding destination="CTA-8D-9wg" name="contentValues" keyPath="keys" id="xBH-kM-BAS">
                                         <dictionary key="options">
                                             <bool key="NSInsertsNullPlaceholder" value="YES"/>
                                             <string key="NSNullPlaceholder" base64-UTF8="YES">
 IA
 </string>
-                                        </dictionary>
-                                    </binding>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="IKp-Tp-wow">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="selectedValue" keyPath="representedObject.keyString" previousBinding="xBH-kM-BAS" id="3Ob-dD-PCP">
@@ -930,7 +947,7 @@ IA
                                 </buttonCell>
                                 <connections>
                                     <action selector="testSSHKey" target="CTA-8D-9wg" id="nOJ-hA-yRL"/>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject.keyString" id="anP-aG-ycK">
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject.keyString" id="VIJ-PU-Rev">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">IsNotEmpty</string>
                                         </dictionary>
@@ -1020,6 +1037,7 @@ IA
                         <outlet property="userField" destination="Xai-9q-FI0" id="Qi9-2U-QzN"/>
                     </connections>
                 </viewController>
+                <userDefaultsController representsSharedInstance="YES" id="lns-vJ-PcH"/>
             </objects>
             <point key="canvasLocation" x="791.5" y="700.5"/>
         </scene>

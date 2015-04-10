@@ -33,13 +33,16 @@ class ConfigFile: NSObject {
         (configs, _) = openFile()
     }
     
-    func fromString(string: String?) -> ([Config], String) {
+    func fromString(string: String?, edited: Bool) -> ([Config], String) {
         var myConfigs: [Config] = []
         var surroundingData: [String] = []
         
         if string != nil {
             var myConfig = false
             var config: Config?
+            var folder: Config?
+            var newFolder: Config?
+            
             for line in string!.componentsSeparatedByString("\n") {
                 switch line {
                 case myConfigStart:
@@ -53,8 +56,20 @@ class ConfigFile: NSObject {
                         switch c[0] {
                         case "Host", "#Host":
                             if config != nil {
-                                config?.edited = false
-                                myConfigs.append(config!)
+                                config?.edited = edited
+                                if newFolder != nil {
+                                    newFolder!.configs.append(config!)
+                                    config!.parent = newFolder
+                                } else if folder != nil {
+                                    folder!.configs.append(config!)
+                                    config!.parent = folder
+                                } else {
+                                    myConfigs.append(config!)
+                                }
+                            }
+                            if newFolder != nil {
+                                myConfigs.append(newFolder!)
+                                newFolder = nil
                             }
                             config = Config(name: c[1])
                             config?.enabled = (c[0] == "Host")
@@ -66,6 +81,12 @@ class ConfigFile: NSObject {
                             config?.port = c[1].toInt()!
                         case "IdentityFile", "#IdentityFile":
                             config?.keyString = " ".join(c[1..<c.count]).stringByReplacingOccurrencesOfString("\"", withString: "").lastPathComponent
+                        case "#Folder":
+                            folder = Config(name: " ".join(c[1..<c.count]))
+                            folder?.isFolder = true
+                        case "#EndFolder":
+                            newFolder = folder
+                            folder = nil
                         default:
                             if c[0] != "" && c[0] != "#" {
                                 NSLog("Unrecognised Key: \(c[0])")
@@ -77,8 +98,20 @@ class ConfigFile: NSObject {
                 }
             }
             if config != nil {
-                config?.edited = false
-                myConfigs.append(config!)
+                config?.edited = edited
+                if newFolder != nil {
+                    newFolder!.configs.append(config!)
+                    config!.parent = newFolder
+                } else if folder != nil {
+                    folder!.configs.append(config!)
+                    config!.parent = folder
+                } else {
+                    myConfigs.append(config!)
+                }
+            }
+            if newFolder != nil {
+                myConfigs.append(newFolder!)
+                newFolder = nil
             }
         }
         
@@ -87,12 +120,11 @@ class ConfigFile: NSObject {
     
     func openFile() -> ([Config], String) {
         let data: NSData? = NSData(contentsOfFile: expandedPath)
-        return fromString(NSString(data: data!, encoding:NSUTF8StringEncoding) as? String)
+        return fromString(NSString(data: data!, encoding:NSUTF8StringEncoding) as? String, edited: false)
     }
     
     func toString() -> String {
         var path = (NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.ApplicationSupportDirectory, NSSearchPathDomainMask.UserDomainMask, true).first! as! String).stringByAppendingPathComponent(NSBundle.mainBundle().infoDictionary?["CFBundleIdentifier"]! as! String)
-        var useMultipleAliases: Bool = NSUserDefaults.standardUserDefaults().boolForKey("useMultipleAliases")
         var string: String = ""
         
         (_, string) = openFile()
@@ -100,6 +132,16 @@ class ConfigFile: NSObject {
         string += (string != "") ? "\n" : ""
         
         string += "\(myConfigStart)\n"
+        
+        string += configArrayToString(configs)
+        
+        string += "\(myConfigEnd)\n"
+        return string
+    }
+    
+    func configArrayToString(configs: [Config]) -> String {
+        var useMultipleAliases: Bool = NSUserDefaults.standardUserDefaults().boolForKey("useMultipleAliases")
+        var string = ""
         
         for config in configs {
             var e = config.enabled && config.validated ? "" : "#"
@@ -109,18 +151,22 @@ class ConfigFile: NSObject {
                 multipleAlias = " \(config.host)"
             }
             
-            string += "\(e)Host \(config.name)\(multipleAlias)\n" +
-                "\(e)\tHostName \(config.host)\n" +
-                "\(e)\tUser \(config.user)\n" +
+            if config.isFolder {
+                string += "#Folder \(config.name)\n"
+                string += configArrayToString(config.configs)
+                string += "#EndFolder \(config.name)\n"
+            } else {
+                string += "\(e)Host \(config.name)\(multipleAlias)\n" +
+                    "\(e)\tHostName \(config.host)\n" +
+                    "\(e)\tUser \(config.user)\n" +
                 "\(e)\tPort \(config.port)\n"
-            if config.keyString != "" {
-                var keyPath = path.stringByAppendingPathComponent(config.keyString)
-                string += "\(e)\tIdentityFile \"\(keyPath)\"\n"
+                if config.keyString != "" {
+                    var keyPath = path.stringByAppendingPathComponent(config.keyString)
+                    string += "\(e)\tIdentityFile \"\(keyPath)\"\n"
+                }
             }
             config.edited = false
         }
-        
-        string += "\(myConfigEnd)\n"
         return string
     }
     
