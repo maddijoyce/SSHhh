@@ -8,7 +8,7 @@
 
 import Cocoa
 
-private var windowContext = 1
+private var searchContext = 1
 private var fileContext   = 3
 private var importContext = 4
 
@@ -27,7 +27,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         super.init(coder: coder)
         
         representedObject = configFile
-        configFile.addObserver(self, forKeyPath: "search", options: .New, context: &windowContext)
+        configFile.addObserver(self, forKeyPath: "search", options: .New, context: &searchContext)
         NSUserDefaults.standardUserDefaults().addObserver(self, forKeyPath: "filePath", options: .New, context: &fileContext)
         
         var appDel = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -71,7 +71,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             return configFile.filteredConfigs.count
         } else {
             if (item is Config && (item as! Config).isFolder) {
-                return (item as! Config).configs.count
+                return (item as! Config).filteredConfigs.count
             } else {
                 return 0
             }
@@ -83,7 +83,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
         if (item is Config && (item as! Config).isFolder) {
-            return (item as! Config).configs[index]
+            return (item as! Config).filteredConfigs[index]
         } else {
             return configFile.filteredConfigs[index]
         }
@@ -174,19 +174,17 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
-        if context == &windowContext {
-            var config: Config! = nil
-            if sideBar.selectedRow != -1 {
-                config = sideBar.itemAtRow(sideBar.selectedRow) as! Config
-            }
+        if context == &searchContext {
+            var config: Config? = editor.representedObject as! Config?
             sideBar.reloadData()
-            if config != nil && contains(configFile.filteredConfigs, config) {
-                sideBar.selectRowIndexes(NSIndexSet(index: sideBar.rowForItem(config)), byExtendingSelection: false)
-            } else if configFile.filteredConfigs.count == 0 {
+
+            sideBar.selectRowIndexes(NSIndexSet(index: sideBar.rowForItem(config)), byExtendingSelection: false)
+            if sideBar.selectedRow == -1 {
+                sideBar.selectRowIndexes(NSIndexSet(index: 0), byExtendingSelection: false)
+            }
+            if sideBar.selectedRow == -1 {
                 editor.representedObject = nil
                 canRemoveHost = false
-            } else {
-                sideBar.selectRowIndexes(NSIndexSet(index: 0), byExtendingSelection: false)
             }
         } else if context == &fileContext {
             revertHosts(object)
@@ -207,6 +205,10 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         } else {
             super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
+    }
+    
+    @IBAction func launchSSHSession(sender: AnyObject?) {
+        self.editor.launchSSHSession(sender)
     }
     
     @IBAction func addGroup(AnyObject) {

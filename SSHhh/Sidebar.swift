@@ -28,4 +28,9 @@ class Sidebar: NSOutlineView {
             view.window?.makeFirstResponder(view.textField)
         }
     }
+    
+    override func reloadData() {
+        super.reloadData()
+        expandItem(nil, expandChildren: true)
+    }
 }

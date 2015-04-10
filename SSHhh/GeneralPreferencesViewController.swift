@@ -12,6 +12,8 @@ class GeneralPreferencesViewController: NSViewController {
     static let keyConfigStart = "# SSHHHKEY START"
     static let keyConfigEnd = "# SSHHHKEY END"
     
+    var terminals = ["Terminal", "iTerm"]
+    
     @IBAction func changeConfigFile(sender: AnyObject) {
         var panel = NSOpenPanel()
         panel.title = "Select a file location"

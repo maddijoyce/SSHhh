@@ -26,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         NSUserDefaults.standardUserDefaults().registerDefaults([
             "filePath": "~/.ssh/config",
+            "terminal": "Terminal",
             "useMultipleAliases": true,
             "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints": true
         ])

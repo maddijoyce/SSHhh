@@ -48,7 +48,7 @@ class EditorController: NSViewController {
         
         config.testingImage = config.TestingTesting
         
-        var task = NSTask()
+        let task = NSTask()
         task.launchPath = "/usr/bin/ssh"
         task.arguments = ["-q", "-F", "/dev/null", "-p", String(config.port), "-l", config.user, "-i", config.keyPath, config.host, "exit"]
         
@@ -59,6 +59,20 @@ class EditorController: NSViewController {
             config.testingImage = config.TestingSuccess
         } else {
             config.testingImage = config.TestingFailure
+        }
+    }
+    
+    @IBAction func launchSSHSession(sender: AnyObject?) {
+        if representedObject is Config {
+            let alias = (representedObject as! Config).name
+            let terminal = NSUserDefaults.standardUserDefaults().stringForKey("terminal")!
+            
+            switch terminal {
+            case "iTerm":
+                NSAppleScript(source: "tell application \"iTerm\" \n make new terminal \n tell the current terminal \n activate current session \n launch session \"Default Session\" \n tell the last session \n write text \"ssh \(alias)\" \n end tell \n end tell \n end tell")?.executeAndReturnError(nil)
+            default:
+                NSAppleScript(source: "tell application \"Terminal\" \n activate \n do script \"ssh \(alias)\" \n end tell")?.executeAndReturnError(nil)
+            }
         }
     }
 }

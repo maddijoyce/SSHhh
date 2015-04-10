@@ -15,8 +15,13 @@ class Config: NSObject {
     dynamic var keyChanged: Bool = false
 
     dynamic var isFolder: Bool = false
-    dynamic var configs: [Config] = []
+    
     dynamic var parent: Config?
+    dynamic var configs: [Config] = []
+    dynamic var search: String? = nil
+    var filteredConfigs: [Config] {
+        return configs.filter() { self.search == nil || $0.name.lowercaseString.rangeOfString(self.search!.lowercaseString) != nil }
+    }
     
     let minPort: Int = 1
     let maxPort: Int = 65535

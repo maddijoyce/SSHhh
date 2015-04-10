@@ -20,7 +20,10 @@ class ConfigFile: NSObject {
     dynamic var search: String? = nil
     
     var filteredConfigs: [Config] {
-        return configs.filter() { self.search == nil || $0.name.lowercaseString.rangeOfString(self.search!.lowercaseString) != nil }
+        for config in configs {
+            config.search = self.search
+        }
+        return configs.filter() { self.search == nil || $0.name.lowercaseString.rangeOfString(self.search!.lowercaseString) != nil || $0.filteredConfigs.count > 0 }
     }
     
     override init() {
@@ -142,7 +145,9 @@ class ConfigFile: NSObject {
                           "\(e)\tUser \(config.user)\n" +
                           "\(e)\tPort \(config.port)\n"
                 if config.keyString != "" {
-                    var keyPath = path.stringByAppendingPathComponent(config.keyString)
+                    var keyPath = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.ApplicationSupportDirectory, NSSearchPathDomainMask.UserDomainMask, true).first! as! String
+                    keyPath = keyPath.stringByAppendingPathComponent((NSBundle.mainBundle().infoDictionary?["CFBundleIdentifier"]! as! String))
+                    keyPath = keyPath.stringByAppendingPathComponent(config.keyString)
                     string += "\(e)\tIdentityFile \"\(keyPath)\"\n"
                 }
                 string += "#EndHost\n"

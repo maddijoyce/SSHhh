@@ -52,7 +52,7 @@
             <objects>
                 <viewController title="General" id="D9H-O4-IA4" customClass="GeneralPreferencesViewController" customModule="SSHhh" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="xhu-Pd-ZgJ">
-                        <rect key="frame" x="0.0" y="0.0" width="500" height="186"/>
+                        <rect key="frame" x="0.0" y="0.0" width="500" height="219"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="bfW-Kf-k0y">
@@ -160,19 +160,49 @@
                                     <action selector="importConfig:" target="D9H-O4-IA4" id="aL1-GU-kNN"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r4R-u0-3Hb">
+                                <rect key="frame" x="18" y="178" width="154" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Wpx-ot-znn"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Terminal Application:" id="XGc-El-30d">
+                                    <font key="font" metaFont="systemBold"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wCZ-TH-xn6">
+                                <rect key="frame" x="178" y="173" width="305" height="26"/>
+                                <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="NIv-q5-iww" id="maf-UQ-N8T">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="XKF-5H-1af">
+                                        <items>
+                                            <menuItem title="Item 1" state="on" id="NIv-q5-iww"/>
+                                            <menuItem title="Item 2" id="RPq-bJ-D2n"/>
+                                            <menuItem title="Item 3" id="X06-oF-skg"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <binding destination="D9H-O4-IA4" name="contentValues" keyPath="terminals" id="IwQ-B9-wjW"/>
+                                    <binding destination="Rsb-9H-z4k" name="selectedValue" keyPath="values.terminal" previousBinding="IwQ-B9-wjW" id="lVH-AT-03C"/>
+                                </connections>
+                            </popUpButton>
                         </subviews>
                         <constraints>
                             <constraint firstItem="eZX-ct-2Uq" firstAttribute="top" secondItem="btF-bx-6Nc" secondAttribute="top" id="1hW-Uf-25r"/>
                             <constraint firstItem="eZX-ct-2Uq" firstAttribute="bottom" secondItem="btF-bx-6Nc" secondAttribute="bottom" id="43C-Ox-QdS"/>
                             <constraint firstItem="OPC-12-eIi" firstAttribute="leading" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="20" id="4cj-no-UKo"/>
+                            <constraint firstItem="eZX-ct-2Uq" firstAttribute="top" secondItem="wCZ-TH-xn6" secondAttribute="bottom" constant="10" id="5Vp-4D-DEY"/>
                             <constraint firstItem="Op1-ia-aEf" firstAttribute="top" secondItem="bfW-Kf-k0y" secondAttribute="bottom" constant="10" id="8Ze-Fa-7sP"/>
                             <constraint firstAttribute="trailing" secondItem="bfW-Kf-k0y" secondAttribute="trailing" constant="20" id="8mf-1O-jfX"/>
                             <constraint firstItem="Oi5-GG-guU" firstAttribute="leading" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="20" id="DDf-pD-oAy"/>
                             <constraint firstItem="J9B-il-gEQ" firstAttribute="top" secondItem="Op1-ia-aEf" secondAttribute="bottom" constant="10" id="HEf-HX-IKL"/>
                             <constraint firstAttribute="trailing" secondItem="Op1-ia-aEf" secondAttribute="trailing" constant="20" id="Iyw-Pp-hiY"/>
-                            <constraint firstItem="eZX-ct-2Uq" firstAttribute="top" secondItem="xhu-Pd-ZgJ" secondAttribute="top" constant="20" id="JLl-Xc-XUX"/>
                             <constraint firstAttribute="trailing" secondItem="eZX-ct-2Uq" secondAttribute="trailing" constant="20" id="O3s-v6-ZWb"/>
                             <constraint firstItem="J9B-il-gEQ" firstAttribute="leading" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="32" id="OrJ-8C-CkO"/>
+                            <constraint firstItem="r4R-u0-3Hb" firstAttribute="leading" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="20" id="QVH-wb-sYV"/>
                             <constraint firstAttribute="trailing" secondItem="J9B-il-gEQ" secondAttribute="trailing" constant="20" id="VG8-8A-5Ok"/>
                             <constraint firstItem="Op1-ia-aEf" firstAttribute="leading" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="20" id="bOr-Ch-sSj"/>
                             <constraint firstAttribute="trailing" secondItem="kB6-iH-KNU" secondAttribute="trailing" constant="20" id="fJr-Ed-f95"/>
@@ -180,6 +210,10 @@
                             <constraint firstItem="OPC-12-eIi" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="xhu-Pd-ZgJ" secondAttribute="leading" constant="20" id="idE-Ou-uWA"/>
                             <constraint firstItem="eZX-ct-2Uq" firstAttribute="centerY" secondItem="OPC-12-eIi" secondAttribute="centerY" id="mJP-vr-W3y"/>
                             <constraint firstItem="Oi5-GG-guU" firstAttribute="top" secondItem="J9B-il-gEQ" secondAttribute="bottom" constant="10" id="qHv-QS-7Yh"/>
+                            <constraint firstItem="wCZ-TH-xn6" firstAttribute="leading" secondItem="r4R-u0-3Hb" secondAttribute="trailing" constant="10" id="r2T-CE-YgQ"/>
+                            <constraint firstItem="wCZ-TH-xn6" firstAttribute="top" secondItem="xhu-Pd-ZgJ" secondAttribute="top" constant="22" id="rjK-d7-2px"/>
+                            <constraint firstItem="wCZ-TH-xn6" firstAttribute="centerY" secondItem="r4R-u0-3Hb" secondAttribute="centerY" id="rva-qi-xgP"/>
+                            <constraint firstAttribute="trailing" secondItem="wCZ-TH-xn6" secondAttribute="trailing" constant="20" id="t7O-m5-6O6"/>
                             <constraint firstItem="eZX-ct-2Uq" firstAttribute="trailing" secondItem="btF-bx-6Nc" secondAttribute="trailing" id="tVe-T4-4wC"/>
                             <constraint firstItem="bfW-Kf-k0y" firstAttribute="top" secondItem="btF-bx-6Nc" secondAttribute="bottom" constant="10" id="tWE-Dx-ck9"/>
                             <constraint firstAttribute="bottom" secondItem="kB6-iH-KNU" secondAttribute="bottom" constant="20" id="wbX-dy-4iI"/>
@@ -192,7 +226,7 @@
                 <customObject id="6oq-xj-mXa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController representsSharedInstance="YES" id="Rsb-9H-z4k"/>
             </objects>
-            <point key="canvasLocation" x="-3" y="710"/>
+            <point key="canvasLocation" x="-3" y="726.5"/>
         </scene>
         <!--Identities-->
         <scene sceneID="Kpd-Hc-Orj">
