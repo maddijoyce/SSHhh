@@ -202,18 +202,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         for window in NSApplication.sharedApplication().windows {
             if window.windowController() is WindowController {
                 if !(window.windowController() as! WindowController).shouldApplicationTerminate() {
-                    var alert = NSAlert()
-                    alert.messageText = "Are you sure?"
-                    alert.informativeText = "Are you sure you want to remove this identity? Any hosts using this identity will no longer have access."
-                    alert.addButtonWithTitle("Yes")
-                    alert.addButtonWithTitle("No")
-                    window.makeKeyAndOrderFront(nil)
-                    alert.beginSheetModalForWindow(window, completionHandler: {
-                        (response: NSModalResponse) in
-                        if response == NSAlertFirstButtonReturn {
-                            
-                        }
-                    })
+                    let alert = NSAlert()
+                    alert.messageText = "Do you want to save your changes?"
+                    alert.informativeText = "Your changes will be lost if you don't save them"
+                    alert.addButtonWithTitle("Save")
+                    alert.addButtonWithTitle("Cancel")
+                    alert.addButtonWithTitle("Don't Save")
+                    let response = alert.runModal()
                 }
             }
         }

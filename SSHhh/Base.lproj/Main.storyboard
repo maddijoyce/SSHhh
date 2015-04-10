@@ -916,17 +916,17 @@ CA
                                     </menu>
                                 </popUpButtonCell>
                                 <connections>
-                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="aSz-iu-ZBS">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">IsNotConfig</string>
-                                        </dictionary>
-                                    </binding>
                                     <binding destination="CTA-8D-9wg" name="contentValues" keyPath="keys" id="xBH-kM-BAS">
                                         <dictionary key="options">
                                             <bool key="NSInsertsNullPlaceholder" value="YES"/>
                                             <string key="NSNullPlaceholder" base64-UTF8="YES">
 IA
 </string>
+                                        </dictionary>
+                                    </binding>
+                                    <binding destination="CTA-8D-9wg" name="enabled" keyPath="representedObject" id="aSz-iu-ZBS">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">IsNotConfig</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="CTA-8D-9wg" name="selectedValue" keyPath="representedObject.keyString" previousBinding="xBH-kM-BAS" id="3Ob-dD-PCP">

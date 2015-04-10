@@ -26,6 +26,8 @@
 		018AAB1219DCF8A100E7E26E /* EditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018AAB1119DCF8A100E7E26E /* EditorController.swift */; };
 		018AAB1419DCFEA500E7E26E /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018AAB1319DCFEA500E7E26E /* WindowController.swift */; };
 		018AAB1819DD521700E7E26E /* Transformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018AAB1719DD521600E7E26E /* Transformers.swift */; };
+		01BDF7FD1AD7A9A200FB8E60 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BDF7FC1AD7A9A200FB8E60 /* Sidebar.swift */; };
+		01BDF7FF1AD7AA1100FB8E60 /* SidebarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BDF7FE1AD7AA1100FB8E60 /* SidebarCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +64,8 @@
 		018AAB1119DCF8A100E7E26E /* EditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorController.swift; sourceTree = "<group>"; };
 		018AAB1319DCFEA500E7E26E /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		018AAB1719DD521600E7E26E /* Transformers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transformers.swift; sourceTree = "<group>"; };
+		01BDF7FC1AD7A9A200FB8E60 /* Sidebar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
+		01BDF7FE1AD7AA1100FB8E60 /* SidebarCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SidebarCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +103,8 @@
 				018AAB1319DCFEA500E7E26E /* WindowController.swift */,
 				0153C0C119DCE0AA000567FC /* ViewController.swift */,
 				018AAB1119DCF8A100E7E26E /* EditorController.swift */,
+				01BDF7FC1AD7A9A200FB8E60 /* Sidebar.swift */,
+				01BDF7FE1AD7AA1100FB8E60 /* SidebarCell.swift */,
 			);
 			name = Main;
 			sourceTree = "<group>";
@@ -296,7 +302,9 @@
 				0153C0C019DCE0AA000567FC /* AppDelegate.swift in Sources */,
 				01292B9819E39B2A004526FE /* AboutViewController.swift in Sources */,
 				01292B9D19E39BE1004526FE /* GeneralPreferencesViewController.swift in Sources */,
+				01BDF7FF1AD7AA1100FB8E60 /* SidebarCell.swift in Sources */,
 				018AAB1419DCFEA500E7E26E /* WindowController.swift in Sources */,
+				01BDF7FD1AD7A9A200FB8E60 /* Sidebar.swift in Sources */,
 				0123E7A719DE7C9200951B42 /* AboutWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
