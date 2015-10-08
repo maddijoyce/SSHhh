@@ -128,6 +128,9 @@ class ConfigFile: NSObject {
         var string = ""
         
         for config in configs {
+            if config.edited {
+                config.edited = false
+            }
             var e = config.enabled && config.validated ? "" : "#"
             
             var multipleAlias = ""
@@ -152,7 +155,6 @@ class ConfigFile: NSObject {
                 }
                 string += "#EndHost\n"
             }
-            config.edited = false
         }
         return string
     }
